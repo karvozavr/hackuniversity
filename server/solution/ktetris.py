@@ -44,6 +44,7 @@ class KTetris:
         self.callback = callback
         self.total = 0
         self.finished = 0
+        self.bad = 0
 
     def performance(self):
         return self.finished / self.total
@@ -92,11 +93,11 @@ class KTetris:
         for iteration in range((size[0][0] + (self.step_size - 1)) // self.step_size):
             offset = iteration * self.step_size
             orders = self.get_orders(offset, self.step_size)
-            yield self.update_solution_with_batch(orders)
+            self.update_solution_with_batch(orders)
 
     def update_solution_with_batch(self, orders):
         for order in orders:
-            yield self.update_solution_with_order(order)
+            self.update_solution_with_order(order)
 
     def update_solution_with_order(self, order):
         queue = []
@@ -113,7 +114,7 @@ class KTetris:
                 return
 
         for eq2, t, heap, amount in queue:
-            yield self.export_result(eq2, order, amount, t)
+            self.export_result(eq2, order, amount, t)
             eq2.available_time += t
             heap.push(eq2)
 
@@ -125,7 +126,10 @@ class KTetris:
                 'amount': amount,
                 'start_time': eq.available_time,
                 'finish_time': eq.available_time + work_time}
-        yield data
+        self.callback(data)
+        w = datetime.datetime.fromtimestamp(eq.available_time + work_time).weekday()
+        if w == 5 or w == 6:
+            self.bad += 1
 
     def push_best_equipment(self, equipment, queue, order):
         min_heap = None
@@ -168,7 +172,7 @@ class KTetris:
     def next_weekday(d, weekday):
         days_ahead = weekday - d.weekday()
         if days_ahead <= 0:
-            days_ahead += 7
+            days_ahead = 0
         return d + datetime.timedelta(days_ahead)
 
     def increment_available_time(self, eq, order):
@@ -177,15 +181,15 @@ class KTetris:
         start_time = datetime.datetime.fromtimestamp(eq.available_time)
         end_time = start_time + datetime.timedelta(seconds=work_time)
 
-        weekend_begin = self.next_weekday(start_time, 5)
+        weekend_begin = datetime.datetime.combine(self.next_weekday(start_time, 5).date(), datetime.datetime.min.time())
 
-        if end_time > weekend_begin:
-            work_time += datetime.timedelta(days=2).seconds
+        if end_time >= weekend_begin:
+            work_time += datetime.timedelta(days=2).total_seconds()
 
         return work_time
 
 
 if __name__ == '__main__':
-    k_tetris = KTetris(Database(), k=700, callback=(lambda x: None))
-    l = list(k_tetris.solve())
-    print(l)
+    k_tetris = KTetris(Database(), k=500, callback=(lambda x: None))
+    k_tetris.solve()
+    print(k_tetris.performance())
