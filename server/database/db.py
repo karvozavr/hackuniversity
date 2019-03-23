@@ -38,7 +38,7 @@ class Database:
             try:
                 result = cursor.fetchall()
             except Exception as e:
-                pass
+                self.connection.commit()
 
             return result
 

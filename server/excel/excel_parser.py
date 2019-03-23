@@ -12,13 +12,13 @@ def load_product_to_database(db: Database):
 
     for _, row in data.iterrows():
         equipment = '{' + row['equipment_class'].replace('\'', '"')[1:-1] + '}'
-        db.insert('products', f"\'{row['_id']}\', \'{equipment}\'", )
+        db.insert('product', f"\'{row['_id']}\', \'{equipment}\'", )
 
 
 def load_order_to_database(db: Database):
     data = parse_table('../static/order.xlsx')
 
-    db.copy_from(data, 'orders')
+    db.copy_from(data, '"order"')
 
 
 def load_equipment_to_database(db: Database):
