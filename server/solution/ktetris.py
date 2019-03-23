@@ -34,7 +34,7 @@ def to_order(order):
 
 
 class KTetris:
-    def __init__(self, db, k=10, step_size=1000, start_timestamp=1552867200, callback=print):
+    def __init__(self, db, k=10, step_size=20000, start_timestamp=1552867200, callback=print):
         self.db = db
         self.k = k
         self.step_size = step_size
@@ -117,9 +117,9 @@ class KTetris:
             self.export_result(eq2, order, amount, t)
             eq2.available_time += t
             heap.push(eq2)
+        self.finished += 1
 
     def export_result(self, eq, order, amount, work_time):
-        self.finished += 1
         data = {'id': self.n,
                 'equipment_id': eq.id,
                 'order_id': order.id,
@@ -190,6 +190,7 @@ class KTetris:
 
 
 if __name__ == '__main__':
-    k_tetris = KTetris(Database(), k=500, callback=(lambda x: None))
+    k_tetris = KTetris(Database(), k=1000, callback=(lambda x: None))
     k_tetris.solve()
     print(k_tetris.performance())
+    print(k_tetris.bad)
