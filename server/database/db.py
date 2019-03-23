@@ -1,4 +1,5 @@
 import io
+import os
 
 import pandas as pd
 
@@ -9,7 +10,8 @@ class Database:
 
     def __init__(self):
         try:
-            with open('../dbconnect', 'r') as dbconnect:
+            dir = os.path.abspath(os.path.dirname(__file__))
+            with open(os.path.join(dir, '../dbconnect'), 'r') as dbconnect:
                 host = dbconnect.readline().strip()
                 passwd = dbconnect.readline().strip()
 

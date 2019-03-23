@@ -41,7 +41,7 @@ CREATE TABLE "user"
 (
   id         TEXT PRIMARY KEY,
   password   TEXT NOT NULL,
-  privileges INT  NOT NULL
+  privileges INT  NOT NULL CHECK ( privileges = 0 OR privileges = 1 )
 );
 
 CREATE TABLE eq_hist_data
