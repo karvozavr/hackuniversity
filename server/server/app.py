@@ -85,6 +85,7 @@ def update_from_files():
 
     if table in DB_NAMES:
         root_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), STATIC_STORAGE_NAME)
+        db.execute(f'DROP TABLE IF EXISTS {DB_NAMES[table]};')
         if table == 'order':
             load_order_to_database(db, os.path.join(root_path, filename))
         elif table == 'equipment':
