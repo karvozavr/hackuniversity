@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 DB_NAMES = {'order': '"order"', 'product': 'product', 'equipment': 'equipment', 'eq_hist_data': 'eq_hist_data'}
 
-HEADERS = {'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Origin': '*',
+HEADERS = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
            'Access-Control-Allow-Headers': 'X-Auth-user-login, X-Auth-user-password'}
 
 STATIC_STORAGE_NAME = 'static'
@@ -157,6 +157,20 @@ def top_vulnerable():
         'select * from '
         '(select equipment_class, avg(repair) from eq_hist_data GROUP BY equipment_class) as subq '
         f'ORDER BY avg DESC limit {n};')
+
+    if result is not None:
+        return jsonify(result), 200, HEADERS
+    return "Internal error.", 500
+
+
+@app.route('/get/deadlines')
+def get_deadlines():
+    db = Database()
+    if check_login(db) is UserType.UNAUTHORIZED:
+        return 'Invalid login/password.', 403
+
+    n = request.args.get('amount')
+    result = db.execute(f'SELECT * FROM "order" ORDER BY deadline LIMIT {n};')
 
     if result is not None:
         return jsonify(result), 200, HEADERS
