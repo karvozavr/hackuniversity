@@ -135,12 +135,13 @@ def get_schedule():
         return 'Invalid login/password.', 403
 
     l = []
-    with open('tempfile.bin', 'wb'):
-        queue = Queue()
-        operating = [True]
-        p = Process(target=solve_problem, args=(lambda x: queue.put(x), operating))
-        p.start()
-    return Response(generate(queue, operating), content_type='application/json', status=200, headers=HEADERS)
+        #queue = Queue()
+        #operating = [True]
+        #p = Process(target=solve_problem, args=(lambda x: queue.put(x), operating))
+        #p.start()
+    l = []
+    solve_problem(l.append, [True])
+    return jsonify(l), 200, HEADERS
 
 
 def solve_problem(callback, operating):
