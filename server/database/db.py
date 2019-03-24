@@ -1,4 +1,5 @@
 import io
+import os
 
 import pandas as pd
 
@@ -9,10 +10,15 @@ class Database:
 
     def __init__(self):
         try:
-            self.connection = psycopg2.connect(dbname='biocadproduction',
-                                               user='postgres',
-                                               host='localhost',
-                                               pasword=None,
+            dir = os.path.abspath(os.path.dirname(__file__))
+            with open(os.path.join(dir, '../dbconnect'), 'r') as dbconnect:
+                host = dbconnect.readline().strip()
+                passwd = dbconnect.readline().strip()
+
+            self.connection = psycopg2.connect(dbname='biotech',
+                                               user='biotech',
+                                               host=host,
+                                               password=passwd,
                                                port='5432')
         except Exception as e:
             print('Failed to connect to database with exception: ', e)
@@ -38,7 +44,7 @@ class Database:
             try:
                 result = cursor.fetchall()
             except Exception as e:
-                pass
+                self.connection.commit()
 
             return result
 
