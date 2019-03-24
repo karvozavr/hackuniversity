@@ -105,7 +105,7 @@ def get_table():
     if check_login(db) is UserType.UNAUTHORIZED:
         return 'Invalid login/password.', 403
 
-    table_name = request.args.get('table-name')
+    table_name = request.args.get('table')
     if table_name in DB_NAMES:
         result = db.execute(f'SELECT * FROM {DB_NAMES[table_name]};')
         if result is not None:
