@@ -144,6 +144,23 @@ def get_schedule():
     return Response(generate(queue, operating), content_type='application/json', status=200, headers=HEADERS)
 
 
+@app.route('/get/top_vulnerable')
+def top_vulnerable():
+    db = Database()
+    if check_login(db) is UserType.UNAUTHORIZED:
+        return 'Invalid login/password.', 403
+
+    n = request.args.get('amount')
+    result = db.execute(
+        'select * from '
+        '(select equipment_class, avg(repair) from eq_hist_data GROUP BY equipment_class) as subq '
+        f'ORDER BY avg DESC limit {n};')
+
+    if result is not None:
+        return jsonify(result), 200, HEADERS
+    return "Internal error.", 500
+
+
 def solve_problem(callback, operating):
     ktetris = KTetris(Database(), k=500, callback=callback)
     ktetris.solve()
