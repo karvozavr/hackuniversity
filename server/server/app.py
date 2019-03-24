@@ -85,6 +85,7 @@ def update_from_files():
 
     if table in DB_NAMES:
         root_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), STATIC_STORAGE_NAME)
+        db.execute(f'DROP TABLE IF EXISTS {DB_NAMES[table]};')
         if table == 'order':
             load_order_to_database(db, os.path.join(root_path, filename))
         elif table == 'equipment':
@@ -105,7 +106,7 @@ def get_table():
     if check_login(db) is UserType.UNAUTHORIZED:
         return 'Invalid login/password.', 403
 
-    table_name = request.args.get('table-name')
+    table_name = request.args.get('table')
     if table_name in DB_NAMES:
         result = db.execute(f'SELECT * FROM {DB_NAMES[table_name]};')
         if result is not None:
@@ -142,6 +143,23 @@ def get_schedule():
     l = []
     solve_problem(l.append, [True])
     return jsonify(l), 200, HEADERS
+
+
+@app.route('/get/top_vulnerable')
+def top_vulnerable():
+    db = Database()
+    if check_login(db) is UserType.UNAUTHORIZED:
+        return 'Invalid login/password.', 403
+
+    n = request.args.get('amount')
+    result = db.execute(
+        'select * from '
+        '(select equipment_class, avg(repair) from eq_hist_data GROUP BY equipment_class) as subq '
+        f'ORDER BY avg DESC limit {n};')
+
+    if result is not None:
+        return jsonify(result), 200, HEADERS
+    return "Internal error.", 500
 
 
 def solve_problem(callback, operating):
