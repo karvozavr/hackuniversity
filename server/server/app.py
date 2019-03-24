@@ -15,7 +15,8 @@ app = Flask(__name__)
 
 DB_NAMES = {'order': '"order"', 'product': 'product', 'equipment': 'equipment', 'eq_hist_data': 'eq_hist_data'}
 
-HEADERS = {'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Origin': '*'}
+HEADERS = {'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Origin': '*',
+           'Access-Control-Allow-Headers': 'X-Auth-user-login, X-Auth-user-password'}
 
 STATIC_STORAGE_NAME = 'static'
 
@@ -136,10 +137,10 @@ def get_schedule():
         return 'Invalid login/password.', 403
 
     l = []
-        #queue = Queue()
-        #operating = [True]
-        #p = Process(target=solve_problem, args=(lambda x: queue.put(x), operating))
-        #p.start()
+    # queue = Queue()
+    # operating = [True]
+    # p = Process(target=solve_problem, args=(lambda x: queue.put(x), operating))
+    # p.start()
     l = []
     solve_problem(l.append, [True])
     return jsonify(l), 200, HEADERS
