@@ -14,4 +14,4 @@
 
 Тогда сложность алгоритма:
 
-![\Large O(\frac{p С a \log e}{k})](https://latex.codecogs.com/svg.latex?x%3D%5Cfrac%7B-b%5Cpm%5Csqrt%7Bb%5E2-4ac%7D%7D%7B2a%7D)
+`O((p * С * a * log(e)) / k)`
